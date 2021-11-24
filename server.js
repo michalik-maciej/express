@@ -1,36 +1,41 @@
 const express = require('express');
 const path = require('path');
 const app = express();
+const hbs = require('express-handlebars');
 
-app.use((req, res, next) => {
-  res.show = (fileName) => {
-    res.sendFile(path.join(__dirname, `/views/${fileName}`));
-  };
-  next();
-});
+app.engine('hbs', hbs());
+app.set('view engine', 'hbs');
 
-app.use('/user', (req, res) => {
-  res.show('forbidden.html');
-})
-
-app.use(express.static(path.join(__dirname, `/public`)));
+app.use(express.static(path.join(__dirname, '/public')));
 
 app.get('/', (req, res) => {
-  res.show('index.html');
+  res.render('index');
 });
 
-app.get('/home', (req, res) => {
-  res.show('index.html');
-});
+app.get('/hello/:name', (req, res) => {
+  res.render('hello', { name: req.params.name });
+})
 
 app.get('/about', (req, res) => {
-  res.show('about.html');
+  res.render('about', { layout: 'dark' });
+});
+
+app.get('/contact', (req, res) => {
+  res.render('contact');
+});
+
+app.get('/history', (req, res) => {
+  res.render('history');
+});
+
+app.get('/info', (req, res) => {
+  res.render('info');
 });
 
 app.use((req, res) => {
-  res.status(404).show('error_404.html');
+  res.status(404).send('404 not found...');
 });
 
-app.listen(8000, () => {
-  console.log('server listening on port 8000');
+app.listen(8080, () => {
+  console.log('Server is running on port 8080');
 });
